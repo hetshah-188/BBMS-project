@@ -1,5 +1,5 @@
-const express = require('express');
-const {
+import express from 'express';
+import {
   getAllInventory,
   getInventoryByBloodType,
   addBloodUnit,
@@ -7,18 +7,24 @@ const {
   deleteBloodUnit,
   getAvailableBloodTypes,
   checkExpiryUnits,
-} = require('../controllers/inventoryController');
-const { protect, authorize } = require('../middleware/auth');
+} from '../controllers/inventoryController.js';
+import { protect, authorize } from '../middleware/auth.js';
 
 const router = express.Router();
+
+// ⚠️ Static routes MUST be declared before parameterized routes
+
+// @route   GET /api/inventory/available
+// @desc    Get available blood types
+router.get('/available', getAvailableBloodTypes);
+
+// @route   GET /api/inventory/expiry/check
+// @desc    Check and update expired units
+router.get('/expiry/check', protect, authorize('admin', 'staff'), checkExpiryUnits);
 
 // @route   GET /api/inventory
 // @desc    Get all blood inventory
 router.get('/', protect, getAllInventory);
-
-// @route   GET /api/inventory/available
-// @desc    Get available blood types (must be before /:bloodType)
-router.get('/available', getAvailableBloodTypes);
 
 // @route   GET /api/inventory/:bloodType
 // @desc    Get inventory by blood type
@@ -36,8 +42,4 @@ router.put('/:id', protect, authorize('admin', 'staff'), updateBloodUnit);
 // @desc    Delete blood unit
 router.delete('/:id', protect, authorize('admin'), deleteBloodUnit);
 
-// @route   GET /api/inventory/expiry/check
-// @desc    Check and update expired units
-router.get('/expiry/check', protect, authorize('admin', 'staff'), checkExpiryUnits);
-
-module.exports = router;
+export default router;

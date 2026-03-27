@@ -1,9 +1,18 @@
-require('dotenv').config();
-const express = require('express');
-const mongoose = require('mongoose');
-const cors = require('cors');
-const helmet = require('helmet');
-const morgan = require('morgan');
+import dotenv from 'dotenv';
+dotenv.config();
+
+import express from 'express';
+import mongoose from 'mongoose';
+import cors from 'cors';
+import helmet from 'helmet';
+import morgan from 'morgan';
+
+import authRoutes from './routes/auth.js';
+import donorRoutes from './routes/donors.js';
+import inventoryRoutes from './routes/inventory.js';
+import requestRoutes from './routes/requests.js';
+import bloodbankRoutes from './routes/bloodbank.js';
+import reportRoutes from './routes/reports.js';
 
 const app = express();
 
@@ -31,12 +40,12 @@ const connectDB = async () => {
 connectDB();
 
 // ==================== ROUTES ====================
-app.use('/api/auth', require('./routes/auth'));
-app.use('/api/donors', require('./routes/donors'));
-app.use('/api/inventory', require('./routes/inventory'));
-app.use('/api/requests', require('./routes/requests'));
-app.use('/api/bloodbank', require('./routes/bloodbank'));
-app.use('/api/reports', require('./routes/reports'));
+app.use('/api/auth', authRoutes);
+app.use('/api/donors', donorRoutes);
+app.use('/api/inventory', inventoryRoutes);
+app.use('/api/requests', requestRoutes);
+app.use('/api/bloodbank', bloodbankRoutes);
+app.use('/api/reports', reportRoutes);
 
 // ==================== ROOT ROUTE ====================
 app.get('/', (req, res) => {
@@ -81,4 +90,4 @@ app.listen(PORT, () => {
   console.log(`🔗 API: http://localhost:${PORT}/api\n`);
 });
 
-module.exports = app;
+export default app;

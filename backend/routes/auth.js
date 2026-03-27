@@ -1,72 +1,111 @@
-const express = require('express');
+import express from 'express';
+import bcrypt from 'bcryptjs';
+import jwt from 'jsonwebtoken';
+import { check, validationResult } from 'express-validator';
+
+import User from '../models/User.js';
+import { protect } from '../middleware/auth.js';
+
 const router = express.Router();
-const bcrypt = require('bcryptjs');
-const jwt = require('jsonwebtoken');
-const { check, validationResult } = require('express-validator');
 
-// Import models
-const User = require('../models/User'); // Adjust path as needed
-
-// Import middleware
-const auth = require('../middleware/auth'); // This is line 10
-
-// @route   GET api/auth
+// @route   GET /api/auth/me
 // @desc    Get logged in user
 // @access  Private
-router.get('/', auth, async (req, res) => {
-    try {
-        const user = await User.findById(req.user.id).select('-password');
-        res.json(user);
-    } catch (err) {
-        console.error(err.message);
-        res.status(500).send('Server Error');
-    }
+router.get('/me', protect, async (req, res) => {
+  try {
+    const user = await User.findById(req.user.id).select('-password');
+    res.json({ success: true, data: user });
+  } catch (err) {
+    console.error(err.message);
+    res.status(500).json({ success: false, message: 'Server Error' });
+  }
 });
 
-// @route   POST api/auth
-// @desc    Authenticate user & get token
+// @route   POST /api/auth/register
+// @desc    Register user
 // @access  Public
-router.post('/', [
+router.post(
+  '/register',
+  [
+    check('name', 'Name is required').notEmpty(),
     check('email', 'Please include a valid email').isEmail(),
-    check('password', 'Password is required').exists()
-], async (req, res) => {
+    check('password', 'Password must be at least 6 characters').isLength({ min: 6 }),
+    check('phone', 'Phone is required').notEmpty(),
+  ],
+  async (req, res) => {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
-        return res.status(400).json({ errors: errors.array() });
+      return res.status(400).json({ success: false, errors: errors.array() });
+    }
+
+    const { name, email, password, phone, role } = req.body;
+
+    try {
+      let user = await User.findOne({ email });
+      if (user) {
+        return res.status(400).json({ success: false, message: 'User already exists' });
+      }
+
+      user = new User({ name, email, password, phone, role: role || 'donor' });
+      await user.save();
+
+      const token = user.getSignedJwt();
+
+      res.status(201).json({
+        success: true,
+        message: 'User registered successfully',
+        token,
+        user: { id: user._id, name: user.name, email: user.email, role: user.role },
+      });
+    } catch (err) {
+      console.error(err.message);
+      res.status(500).json({ success: false, message: 'Server Error' });
+    }
+  }
+);
+
+// @route   POST /api/auth/login
+// @desc    Authenticate user & get token
+// @access  Public
+router.post(
+  '/login',
+  [
+    check('email', 'Please include a valid email').isEmail(),
+    check('password', 'Password is required').exists(),
+  ],
+  async (req, res) => {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      return res.status(400).json({ errors: errors.array() });
     }
 
     const { email, password } = req.body;
 
     try {
-        let user = await User.findOne({ email });
-        if (!user) {
-            return res.status(400).json({ msg: 'Invalid Credentials' });
-        }
+      const user = await User.findOne({ email }).select('+password');
+      if (!user) {
+        return res.status(400).json({ success: false, message: 'Invalid Credentials' });
+      }
 
-        const isMatch = await bcrypt.compare(password, user.password);
-        if (!isMatch) {
-            return res.status(400).json({ msg: 'Invalid Credentials' });
-        }
+      const isMatch = await bcrypt.compare(password, user.password);
+      if (!isMatch) {
+        return res.status(400).json({ success: false, message: 'Invalid Credentials' });
+      }
 
-        const payload = {
-            user: {
-                id: user.id
-            }
-        };
-
-        jwt.sign(
-            payload,
-            process.env.JWT_SECRET || 'your-secret-key',
-            { expiresIn: '7d' },
-            (err, token) => {
-                if (err) throw err;
-                res.json({ token });
-            }
-        );
+      const token = user.getSignedJwt();
+      res.json({ success: true, token });
     } catch (err) {
-        console.error(err.message);
-        res.status(500).send('Server Error');
+      console.error(err.message);
+      res.status(500).json({ success: false, message: 'Server Error' });
     }
+  }
+);
+
+// @route   POST /api/auth/logout
+// @desc    Logout (client should delete token)
+// @access  Private
+router.post('/logout', protect, (req, res) => {
+  res.json({ success: true, message: 'Logout successful. Please delete token from client.' });
 });
 
-module.exports = router;
+export default router;

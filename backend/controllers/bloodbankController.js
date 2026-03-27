@@ -1,12 +1,12 @@
-const BloodBank = require('../models/BloodBank');
-const BloodInventory = require('../models/BloodInventory');
-const Donor = require('../models/Donor');
-const BloodRequest = require('../models/BloodRequest');
+import BloodBank  from '../models/BloodBank.js';
+import BloodInventory  from '../models/BloodInventory.js';
+import Donor  from '../models/Donor.js';
+import BloodRequest  from '../models/BloodRequest.js';
 
 // @desc    Get blood bank info
 // @route   GET /api/bloodbank/info
 // @access  Public
-exports.getBloodBankInfo = async (req, res) => {
+export const getBloodBankInfo = async (req, res) => {
   try {
     const bloodBank = await BloodBank.findOne();
 
@@ -33,7 +33,7 @@ exports.getBloodBankInfo = async (req, res) => {
 // @desc    Update blood bank info
 // @route   PUT /api/bloodbank/info
 // @access  Private (Admin)
-exports.updateBloodBankInfo = async (req, res) => {
+export const updateBloodBankInfo = async (req, res) => {
   try {
     let bloodBank = await BloodBank.findOne();
 
@@ -65,7 +65,7 @@ exports.updateBloodBankInfo = async (req, res) => {
 // @desc    Get blood bank statistics
 // @route   GET /api/bloodbank/stats
 // @access  Private
-exports.getBloodBankStats = async (req, res) => {
+export const getBloodBankStats = async (req, res) => {
   try {
     // Count total donors
     const totalDonors = await Donor.countDocuments();
@@ -162,7 +162,7 @@ exports.getBloodBankStats = async (req, res) => {
 // @desc    Get storage capacity info
 // @route   GET /api/bloodbank/capacity
 // @access  Private
-exports.getStorageCapacity = async (req, res) => {
+export const getStorageCapacity = async (req, res) => {
   try {
     const bloodBank = await BloodBank.findOne();
 
@@ -209,7 +209,7 @@ exports.getStorageCapacity = async (req, res) => {
 // @desc    Get dashboard summary
 // @route   GET /api/bloodbank/dashboard
 // @access  Private
-exports.getDashboardSummary = async (req, res) => {
+export const getDashboardSummary = async (req, res) => {
   try {
     // Quick stats
     const availableUnits = await BloodInventory.countDocuments({

@@ -1,4 +1,4 @@
-const mongoose = require('mongoose');
+import mongoose from 'mongoose';
 
 const donorSchema = new mongoose.Schema(
   {
@@ -19,10 +19,10 @@ const donorSchema = new mongoose.Schema(
     weight: {
       type: Number,
       required: true,
-      min: 50, // kg
+      min: 50,
     },
     height: {
-      type: Number, // cm
+      type: Number,
       required: true,
     },
     gender: {
@@ -87,18 +87,15 @@ donorSchema.virtual('age').get(function () {
   const today = new Date();
   let age = today.getFullYear() - this.dateOfBirth.getFullYear();
   const monthDiff = today.getMonth() - this.dateOfBirth.getMonth();
-  if (
-    monthDiff < 0 ||
-    (monthDiff === 0 && today.getDate() < this.dateOfBirth.getDate())
-  ) {
+  if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < this.dateOfBirth.getDate())) {
     age--;
   }
   return age;
 });
 
-// Index for faster queries
+// Indexes for faster queries
 donorSchema.index({ userId: 1 });
 donorSchema.index({ bloodType: 1 });
 donorSchema.index({ status: 1 });
 
-module.exports = mongoose.model('Donor', donorSchema);
+export default mongoose.model('Donor', donorSchema);

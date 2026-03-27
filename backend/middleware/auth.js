@@ -1,38 +1,44 @@
-const jwt = require('jsonwebtoken');
+import jwt from 'jsonwebtoken';
+import User from '../models/User.js';
 
-// Middleware to verify JWT token
-const auth = (req, res, next) => {
-    // Get token from header
-    const token = req.header('x-auth-token') || req.header('Authorization');
+// Middleware to verify JWT token and protect routes
+export const protect = async (req, res, next) => {
+  const token =
+    req.header('x-auth-token') ||
+    (req.header('Authorization')?.startsWith('Bearer ')
+      ? req.header('Authorization').slice(7)
+      : null);
 
-    // Check if no token
-    if (!token) {
-        return res.status(401).json({ 
-            success: false,
-            message: 'No token, authorization denied' 
-        });
-    }
+  if (!token) {
+    return res.status(401).json({
+      success: false,
+      message: 'No token, authorization denied',
+    });
+  }
 
-    try {
-        // Remove 'Bearer ' prefix if present
-        let tokenValue = token;
-        if (token.startsWith('Bearer ')) {
-            tokenValue = token.slice(7, token.length);
-        }
-
-        // Verify token
-        const decoded = jwt.verify(tokenValue, process.env.JWT_SECRET || 'your-secret-key');
-        
-        // Add user info to request
-        req.user = decoded.user || decoded;
-        
-        next();
-    } catch (err) {
-        res.status(401).json({ 
-            success: false,
-            message: 'Token is not valid' 
-        });
-    }
+  try {
+    const decoded = jwt.verify(token, process.env.JWT_SECRET || 'your-secret-key');
+    req.user = decoded.user || decoded;
+    next();
+  } catch (err) {
+    res.status(401).json({
+      success: false,
+      message: 'Token is not valid',
+    });
+  }
 };
 
-module.exports = auth;
+// Middleware to restrict access by role
+export const authorize = (...roles) => {
+  return (req, res, next) => {
+    if (!roles.includes(req.user.role)) {
+      return res.status(403).json({
+        success: false,
+        message: `Role '${req.user.role}' is not authorized to access this route`,
+      });
+    }
+    next();
+  };
+};
+
+export default protect;

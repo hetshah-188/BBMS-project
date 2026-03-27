@@ -1,5 +1,5 @@
-const express = require('express');
-const {
+import express from 'express';
+import {
   getAllDonors,
   getDonorById,
   createDonor,
@@ -7,8 +7,8 @@ const {
   deleteDonor,
   getDonationHistory,
   updateDonorStatus,
-} = require('../controllers/donorController');
-const { protect, authorize } = require('../middleware/auth');
+} from '../controllers/donorController.js';
+import { protect, authorize } from '../middleware/auth.js';
 
 const router = express.Router();
 
@@ -16,20 +16,20 @@ const router = express.Router();
 // @desc    Get all donors
 router.get('/', protect, getAllDonors);
 
-// @route   GET /api/donors/:id
-// @desc    Get donor by ID
-router.get('/:id', protect, getDonorById);
-
 // @route   POST /api/donors
 // @desc    Create donor profile
 router.post('/', protect, createDonor);
+
+// @route   GET /api/donors/:id
+// @desc    Get donor by ID
+router.get('/:id', protect, getDonorById);
 
 // @route   PUT /api/donors/:id
 // @desc    Update donor profile
 router.put('/:id', protect, updateDonor);
 
 // @route   DELETE /api/donors/:id
-// @desc    Delete donor
+// @desc    Delete donor (Admin only)
 router.delete('/:id', protect, authorize('admin'), deleteDonor);
 
 // @route   GET /api/donors/:id/history
@@ -37,7 +37,7 @@ router.delete('/:id', protect, authorize('admin'), deleteDonor);
 router.get('/:id/history', protect, getDonationHistory);
 
 // @route   PUT /api/donors/:id/status
-// @desc    Update donor status
+// @desc    Update donor status (Admin/Staff only)
 router.put('/:id/status', protect, authorize('admin', 'staff'), updateDonorStatus);
 
-module.exports = router;
+export default router;

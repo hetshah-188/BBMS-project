@@ -1,4 +1,4 @@
-const mongoose = require('mongoose');
+import mongoose from 'mongoose';
 
 const bloodInventorySchema = new mongoose.Schema(
   {
@@ -20,7 +20,7 @@ const bloodInventorySchema = new mongoose.Schema(
     },
     volume: {
       type: Number,
-      default: 450, // ml per bag
+      default: 450,
     },
     collectionDate: {
       type: Date,
@@ -46,38 +46,18 @@ const bloodInventorySchema = new mongoose.Schema(
     testResults: {
       bloodTyping: String,
       rhesusFactor: String,
-      hiv: {
-        type: String,
-        enum: ['negative', 'positive', 'pending'],
-        default: 'pending',
-      },
-      hepatitisB: {
-        type: String,
-        enum: ['negative', 'positive', 'pending'],
-        default: 'pending',
-      },
-      hepatitisC: {
-        type: String,
-        enum: ['negative', 'positive', 'pending'],
-        default: 'pending',
-      },
-      syphilis: {
-        type: String,
-        enum: ['negative', 'positive', 'pending'],
-        default: 'pending',
-      },
-      malaria: {
-        type: String,
-        enum: ['negative', 'positive', 'pending'],
-        default: 'pending',
-      },
+      hiv: { type: String, enum: ['negative', 'positive', 'pending'], default: 'pending' },
+      hepatitisB: { type: String, enum: ['negative', 'positive', 'pending'], default: 'pending' },
+      hepatitisC: { type: String, enum: ['negative', 'positive', 'pending'], default: 'pending' },
+      syphilis: { type: String, enum: ['negative', 'positive', 'pending'], default: 'pending' },
+      malaria: { type: String, enum: ['negative', 'positive', 'pending'], default: 'pending' },
       testDate: Date,
       remarks: String,
     },
     storage: {
       location: String,
       shelf: String,
-      temperature: Number, // Celsius
+      temperature: Number,
     },
     usedFor: {
       requestId: mongoose.Schema.Types.ObjectId,
@@ -90,21 +70,17 @@ const bloodInventorySchema = new mongoose.Schema(
   { timestamps: true }
 );
 
-// Virtual for checking if expired
 bloodInventorySchema.virtual('isExpired').get(function () {
   return new Date() > this.expiryDate;
 });
 
-// Virtual for days until expiry
 bloodInventorySchema.virtual('daysUntilExpiry').get(function () {
-  const today = new Date();
-  const diff = this.expiryDate - today;
+  const diff = this.expiryDate - new Date();
   return Math.ceil(diff / (1000 * 60 * 60 * 24));
 });
 
-// Index for faster queries
 bloodInventorySchema.index({ bloodType: 1, status: 1 });
 bloodInventorySchema.index({ expiryDate: 1 });
 bloodInventorySchema.index({ status: 1 });
 
-module.exports = mongoose.model('BloodInventory', bloodInventorySchema);
+export default mongoose.model('BloodInventory', bloodInventorySchema);

@@ -1,4 +1,4 @@
-const mongoose = require('mongoose');
+import mongoose from 'mongoose';
 
 const bloodBankSchema = new mongoose.Schema(
   {
@@ -7,15 +7,8 @@ const bloodBankSchema = new mongoose.Schema(
       required: [true, 'Blood bank name is required'],
       unique: true,
     },
-    email: {
-      type: String,
-      required: true,
-      unique: true,
-    },
-    phone: {
-      type: String,
-      required: true,
-    },
+    email: { type: String, required: true, unique: true },
+    phone: { type: String, required: true },
     registrationNumber: String,
     licenseNumber: String,
     licenseExpiryDate: Date,
@@ -51,10 +44,7 @@ const bloodBankSchema = new mongoose.Schema(
       validUntil: Date,
     },
     inventory: {
-      totalUnits: {
-        type: Number,
-        default: 0,
-      },
+      totalUnits: { type: Number, default: 0 },
       bloodTypes: {
         'A+': { type: Number, default: 0 },
         'A-': { type: Number, default: 0 },
@@ -73,27 +63,13 @@ const bloodBankSchema = new mongoose.Schema(
       totalFulfilled: { type: Number, default: 0 },
       totalRejected: { type: Number, default: 0 },
     },
-    emergencyContact: {
-      name: String,
-      phone: String,
-      email: String,
-    },
+    emergencyContact: { name: String, phone: String, email: String },
     website: String,
-    socialMedia: {
-      facebook: String,
-      twitter: String,
-      instagram: String,
-    },
+    socialMedia: { facebook: String, twitter: String, instagram: String },
     services: [
       {
         type: String,
-        enum: [
-          'blood_donation',
-          'blood_testing',
-          'transfusion',
-          'plasma_donation',
-          'platelet_donation',
-        ],
+        enum: ['blood_donation', 'blood_testing', 'transfusion', 'plasma_donation', 'platelet_donation'],
       },
     ],
     certifications: [String],
@@ -107,7 +83,6 @@ const bloodBankSchema = new mongoose.Schema(
   { timestamps: true }
 );
 
-// Index
-bloodBankSchema.index({ city: 1, status: 1 });
+bloodBankSchema.index({ 'address.city': 1, status: 1 });
 
-module.exports = mongoose.model('BloodBank', bloodBankSchema);
+export default mongoose.model('BloodBank', bloodBankSchema);

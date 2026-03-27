@@ -1,11 +1,11 @@
-const Donor = require('../models/Donor');
-const BloodInventory = require('../models/BloodInventory');
-const BloodRequest = require('../models/BloodRequest');
+import Donor  from '../models/Donor.js';
+import BloodInventory  from '../models/BloodInventory.js';
+import BloodRequest  from '../models/BloodRequest.js';
 
 // @desc    Get donor statistics
 // @route   GET /api/reports/donors
 // @access  Private
-exports.getDonorReport = async (req, res) => {
+export const getDonorReport = async (req, res) => {
   try {
     const { startDate, endDate } = req.query;
     let query = {};
@@ -97,7 +97,7 @@ exports.getDonorReport = async (req, res) => {
 // @desc    Get inventory report
 // @route   GET /api/reports/inventory
 // @access  Private
-exports.getInventoryReport = async (req, res) => {
+export const getInventoryReport = async (req, res) => {
   try {
     const { startDate, endDate } = req.query;
     let query = {};
@@ -208,7 +208,7 @@ exports.getInventoryReport = async (req, res) => {
 // @desc    Get request report
 // @route   GET /api/reports/requests
 // @access  Private
-exports.getRequestReport = async (req, res) => {
+export const getRequestReport = async (req, res) => {
   try {
     const { startDate, endDate } = req.query;
     let query = {};
@@ -335,7 +335,7 @@ exports.getRequestReport = async (req, res) => {
 // @desc    Get expiry report
 // @route   GET /api/reports/expiry
 // @access  Private
-exports.getExpiryReport = async (req, res) => {
+export const getExpiryReport = async (req, res) => {
   try {
     // Already expired
     const expiredUnits = await BloodInventory.find({

@@ -1,10 +1,10 @@
-const BloodInventory = require('../models/BloodInventory');
-const Donor = require('../models/Donor');
+import BloodInventory  from '../models/BloodInventory.js';
+import Donor  from '../models/Donor.js';
 
 // @desc    Get all blood inventory
 // @route   GET /api/inventory
 // @access  Private
-exports.getAllInventory = async (req, res) => {
+export const getAllInventory = async (req, res) => {
   try {
     const { bloodType, status, limit = 20, page = 1 } = req.query;
     let query = {};
@@ -42,7 +42,7 @@ exports.getAllInventory = async (req, res) => {
 // @desc    Get inventory by blood type
 // @route   GET /api/inventory/:bloodType
 // @access  Private
-exports.getInventoryByBloodType = async (req, res) => {
+export const getInventoryByBloodType = async (req, res) => {
   try {
     const { bloodType } = req.params;
     const { status = 'available' } = req.query;
@@ -73,7 +73,7 @@ exports.getInventoryByBloodType = async (req, res) => {
 // @desc    Add blood unit
 // @route   POST /api/inventory
 // @access  Private (Admin/Staff)
-exports.addBloodUnit = async (req, res) => {
+export const addBloodUnit = async (req, res) => {
   try {
     const {
       bloodType,
@@ -145,7 +145,7 @@ exports.addBloodUnit = async (req, res) => {
 // @desc    Update blood unit
 // @route   PUT /api/inventory/:id
 // @access  Private (Admin/Staff)
-exports.updateBloodUnit = async (req, res) => {
+export const updateBloodUnit = async (req, res) => {
   try {
     let unit = await BloodInventory.findById(req.params.id);
 
@@ -178,7 +178,7 @@ exports.updateBloodUnit = async (req, res) => {
 // @desc    Delete blood unit
 // @route   DELETE /api/inventory/:id
 // @access  Private (Admin)
-exports.deleteBloodUnit = async (req, res) => {
+export const deleteBloodUnit = async (req, res) => {
   try {
     const unit = await BloodInventory.findByIdAndDelete(req.params.id);
 
@@ -206,7 +206,7 @@ exports.deleteBloodUnit = async (req, res) => {
 // @desc    Get available blood types
 // @route   GET /api/inventory/available
 // @access  Public
-exports.getAvailableBloodTypes = async (req, res) => {
+export const getAvailableBloodTypes = async (req, res) => {
   try {
     const bloodTypes = [
       'A+',
@@ -249,7 +249,7 @@ exports.getAvailableBloodTypes = async (req, res) => {
 // @desc    Check inventory expiry
 // @route   GET /api/inventory/expiry/check
 // @access  Private (Admin)
-exports.checkExpiryUnits = async (req, res) => {
+export const checkExpiryUnits = async (req, res) => {
   try {
     const now = new Date();
 

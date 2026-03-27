@@ -1,10 +1,10 @@
-const Donor = require('../models/Donor');
-const User = require('../models/User');
+import Donor  from '../models/Donor.js';
+import User  from '../models/User.js';
 
 // @desc    Get all donors
 // @route   GET /api/donors
 // @access  Private
-exports.getAllDonors = async (req, res) => {
+export const getAllDonors = async (req, res) => {
   try {
     const { bloodType, status, city, limit = 10, page = 1 } = req.query;
     let query = {};
@@ -43,7 +43,7 @@ exports.getAllDonors = async (req, res) => {
 // @desc    Get single donor
 // @route   GET /api/donors/:id
 // @access  Private
-exports.getDonorById = async (req, res) => {
+export const getDonorById = async (req, res) => {
   try {
     const donor = await Donor.findById(req.params.id).populate(
       'userId',
@@ -73,7 +73,7 @@ exports.getDonorById = async (req, res) => {
 // @desc    Create donor profile
 // @route   POST /api/donors
 // @access  Private
-exports.createDonor = async (req, res) => {
+export const createDonor = async (req, res) => {
   try {
     const {
       bloodType,
@@ -133,7 +133,7 @@ exports.createDonor = async (req, res) => {
 // @desc    Update donor profile
 // @route   PUT /api/donors/:id
 // @access  Private
-exports.updateDonor = async (req, res) => {
+export const updateDonor = async (req, res) => {
   try {
     let donor = await Donor.findById(req.params.id);
 
@@ -174,7 +174,7 @@ exports.updateDonor = async (req, res) => {
 // @desc    Delete donor
 // @route   DELETE /api/donors/:id
 // @access  Private (Admin only)
-exports.deleteDonor = async (req, res) => {
+export const deleteDonor = async (req, res) => {
   try {
     const donor = await Donor.findByIdAndDelete(req.params.id);
 
@@ -202,7 +202,7 @@ exports.deleteDonor = async (req, res) => {
 // @desc    Get donor's donation history
 // @route   GET /api/donors/:id/history
 // @access  Private
-exports.getDonationHistory = async (req, res) => {
+export const getDonationHistory = async (req, res) => {
   try {
     const donor = await Donor.findById(req.params.id);
 
@@ -235,7 +235,7 @@ exports.getDonationHistory = async (req, res) => {
 // @desc    Update donor status
 // @route   PUT /api/donors/:id/status
 // @access  Private (Admin only)
-exports.updateDonorStatus = async (req, res) => {
+export const updateDonorStatus = async (req, res) => {
   try {
     const { status, reason } = req.body;
 

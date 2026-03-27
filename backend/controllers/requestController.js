@@ -1,11 +1,11 @@
-const BloodRequest = require('../models/BloodRequest');
-const BloodInventory = require('../models/BloodInventory');
-const User = require('../models/User');
+import BloodRequest  from '../models/BloodRequest.js';
+import BloodInventory  from '../models/BloodInventory.js';
+import User  from '../models/User.js';
 
 // @desc    Get all requests
 // @route   GET /api/requests
 // @access  Private
-exports.getAllRequests = async (req, res) => {
+export const getAllRequests = async (req, res) => {
   try {
     const {
       status,
@@ -51,7 +51,7 @@ exports.getAllRequests = async (req, res) => {
 // @desc    Get single request
 // @route   GET /api/requests/:id
 // @access  Private
-exports.getRequestById = async (req, res) => {
+export const getRequestById = async (req, res) => {
   try {
     const request = await BloodRequest.findById(req.params.id)
       .populate('requesterId', 'name email phone')
@@ -81,7 +81,7 @@ exports.getRequestById = async (req, res) => {
 // @desc    Create blood request
 // @route   POST /api/requests
 // @access  Private
-exports.createRequest = async (req, res) => {
+export const createRequest = async (req, res) => {
   try {
     const {
       bloodType,
@@ -140,7 +140,7 @@ exports.createRequest = async (req, res) => {
 // @desc    Update request status
 // @route   PUT /api/requests/:id
 // @access  Private (Admin/Staff)
-exports.updateRequestStatus = async (req, res) => {
+export const updateRequestStatus = async (req, res) => {
   try {
     const { status, rejectionReason, approverNotes } = req.body;
 
@@ -199,7 +199,7 @@ exports.updateRequestStatus = async (req, res) => {
 // @desc    Allocate blood units to request
 // @route   PUT /api/requests/:id/allocate
 // @access  Private (Admin/Staff)
-exports.allocateBloodUnits = async (req, res) => {
+export const allocateBloodUnits = async (req, res) => {
   try {
     const { inventoryIds } = req.body;
 
@@ -265,7 +265,7 @@ exports.allocateBloodUnits = async (req, res) => {
 // @desc    Get requests by status
 // @route   GET /api/requests/status/:status
 // @access  Private
-exports.getRequestsByStatus = async (req, res) => {
+export const getRequestsByStatus = async (req, res) => {
   try {
     const { status } = req.params;
     const { limit = 20, page = 1 } = req.query;
@@ -315,7 +315,7 @@ exports.getRequestsByStatus = async (req, res) => {
 // @desc    Cancel request
 // @route   DELETE /api/requests/:id
 // @access  Private
-exports.cancelRequest = async (req, res) => {
+export const cancelRequest = async (req, res) => {
   try {
     const request = await BloodRequest.findById(req.params.id);
 

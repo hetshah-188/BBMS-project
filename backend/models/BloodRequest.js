@@ -1,4 +1,4 @@
-const mongoose = require('mongoose');
+import mongoose from 'mongoose';
 
 const bloodRequestSchema = new mongoose.Schema(
   {
@@ -27,14 +27,7 @@ const bloodRequestSchema = new mongoose.Schema(
     },
     reason: {
       type: String,
-      enum: [
-        'surgery',
-        'accident',
-        'disease',
-        'blood_transfusion',
-        'emergency',
-        'general',
-      ],
+      enum: ['surgery', 'accident', 'disease', 'blood_transfusion', 'emergency', 'general'],
       required: true,
     },
     description: String,
@@ -86,19 +79,15 @@ const bloodRequestSchema = new mongoose.Schema(
       ref: 'User',
     },
     notes: String,
-    priority: {
-      type: Number,
-      default: 0,
-    },
+    priority: { type: Number, default: 0 },
   },
   { timestamps: true }
 );
 
-// Index for faster queries
 bloodRequestSchema.index({ status: 1 });
 bloodRequestSchema.index({ bloodType: 1 });
 bloodRequestSchema.index({ requiredByDate: 1 });
 bloodRequestSchema.index({ urgency: 1 });
 bloodRequestSchema.index({ requesterId: 1 });
 
-module.exports = mongoose.model('BloodRequest', bloodRequestSchema);
+export default mongoose.model('BloodRequest', bloodRequestSchema);

@@ -1,13 +1,15 @@
-const express = require('express');
-const {
+import express from 'express';
+import {
   getDonorReport,
   getInventoryReport,
   getRequestReport,
   getExpiryReport,
-} = require('../controllers/reportController');
-const { protect, authorize } = require('../middleware/auth');
+} from '../controllers/reportController.js';
+import { protect, authorize } from '../middleware/auth.js';
 
 const router = express.Router();
+
+// All report routes are restricted to Admin and Staff
 
 // @route   GET /api/reports/donors
 // @desc    Get donor statistics and report
@@ -25,4 +27,4 @@ router.get('/requests', protect, authorize('admin', 'staff'), getRequestReport);
 // @desc    Get blood expiry report
 router.get('/expiry', protect, authorize('admin', 'staff'), getExpiryReport);
 
-module.exports = router;
+export default router;
