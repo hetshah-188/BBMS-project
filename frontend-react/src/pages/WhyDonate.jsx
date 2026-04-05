@@ -31,36 +31,22 @@ const WhyDonate = () => {
   useEffect(() => {
     let timer;
     const fetchData = async () => {
+      let targets = {
+        donationsToday: 1247,
+        livesSavedToday: 3741,
+        activeDonors: 342
+      };
+
       try {
         const response = await bloodbankService.getStats();
         if (response.success && response.data) {
           const { inventory, requests, donors } = response.data;
 
-          const targets = {
+          targets = {
             donationsToday: inventory.total || 1247,
             livesSavedToday: requests.fulfilled || 3741,
             activeDonors: donors.total || 342
           };
-
-          const duration = 2000;
-          const steps = 60;
-          const interval = duration / steps;
-          let currentStep = 0;
-
-          timer = setInterval(() => {
-            currentStep++;
-            if (currentStep >= steps) {
-              setCounts(prev => ({ ...prev, ...targets }));
-              if (timer) clearInterval(timer);
-            } else {
-              setCounts(prev => ({
-                ...prev,
-                donationsToday: Math.floor((targets.donationsToday / steps) * currentStep),
-                livesSavedToday: Math.floor((targets.livesSavedToday / steps) * currentStep),
-                activeDonors: Math.floor((targets.activeDonors / steps) * currentStep)
-              }));
-            }
-          }, interval);
 
           // Set live stats from backend
           setLiveStats({
@@ -72,6 +58,27 @@ const WhyDonate = () => {
         }
       } catch (error) {
         console.error('Error fetching data for Why Donate:', error);
+      } finally {
+        // Animate counters with either API data or defaults
+        const duration = 2000;
+        const steps = 60;
+        const interval = duration / steps;
+        let currentStep = 0;
+
+        timer = setInterval(() => {
+          currentStep++;
+          if (currentStep >= steps) {
+            setCounts(prev => ({ ...prev, ...targets }));
+            if (timer) clearInterval(timer);
+          } else {
+            setCounts(prev => ({
+              ...prev,
+              donationsToday: Math.floor((targets.donationsToday / steps) * currentStep),
+              livesSavedToday: Math.floor((targets.livesSavedToday / steps) * currentStep),
+              activeDonors: Math.floor((targets.activeDonors / steps) * currentStep)
+            }));
+          }
+        }, interval);
       }
     };
     fetchData();

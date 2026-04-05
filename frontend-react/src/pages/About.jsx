@@ -19,12 +19,13 @@ const About = () => {
           const { requests } = response.data;
           setStats(prev => ({
             ...prev,
-            livesSaved: `${requests.fulfilled}+`,
+            livesSaved: `${requests.fulfilled || '100K'}+`,
             responseTime: '45min'
           }));
         }
       } catch (error) {
         console.error('Error fetching blood bank stats:', error);
+        // Stats will retain default values defined in useState
       }
     };
     fetchStats();
