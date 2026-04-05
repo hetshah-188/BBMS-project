@@ -86,6 +86,17 @@ export const inventoryService = {
   },
 };
 
+export const bloodbankService = {
+  getInfo: async () => {
+    const { data } = await api.get('/bloodbank/info');
+    return data;
+  },
+  getStats: async () => {
+    const { data } = await api.get('/bloodbank/stats');
+    return data;
+  },
+};
+
 export const adminService = {
   getStats: async () => {
     const { data } = await api.get('/admin/stats');

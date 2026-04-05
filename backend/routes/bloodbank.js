@@ -21,7 +21,7 @@ router.get('/info', getBloodBankInfo);
 
 // @route   GET /api/bloodbank/stats
 // @desc    Get blood bank statistics
-router.get('/stats', protect, getBloodBankStats);
+router.get('/stats', getBloodBankStats);
 
 // @route   GET /api/bloodbank/capacity
 // @desc    Get storage capacity information
