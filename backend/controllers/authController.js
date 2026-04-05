@@ -11,7 +11,8 @@ export const register = async (req, res) => {
       return res.status(400).json({ success: false, errors: errors.array() });
     }
 
-    const { name, email, password, phone, role } = req.body;
+    const { name: rawName, fullname, email, password, phone, role } = req.body;
+    const name = rawName || fullname;
 
     let user = await User.findOne({ email });
     if (user) {

@@ -1,6 +1,7 @@
 import Donation from '../models/Donation.js';
 import BloodInventory from '../models/BloodInventory.js';
 import User from '../models/User.js';
+import Donor from '../models/Donor.js';
 
 // @desc    Create new donation record
 // @route   POST /api/donations
@@ -96,15 +97,28 @@ export const updateDonationStatus = async (req, res) => {
 
     // If completed, add to inventory
     if (status === 'completed') {
+      // Find the Donor record linked to this User
+      const donorRecord = await Donor.findOne({ userId: donation.donorId });
+      if (!donorRecord) {
+        return res.status(400).json({ success: false, message: 'No donor profile found for this user' });
+      }
       const inventory = new BloodInventory({
         bloodType: donation.bloodType,
-        units: donation.units,
-        source: 'donation',
-        donorId: donation.donorId,
+        quantity: donation.units,
+        donorId: donorRecord._id,           // correct reference
+        donorName: donorRecord.userId?.name,
+        collectionDate: donation.donationDate,
+        expiryDate: new Date(Date.now() + 42 * 24 * 60 * 60 * 1000),
         status: 'available',
-        expiryDate: new Date(Date.now() + 42 * 24 * 60 * 60 * 1000), // 42 days expiry
       });
       await inventory.save();
+      // Update the donor's donation history
+      donorRecord.donationHistory.totalDonations += 1;
+      donorRecord.donationHistory.lastDonationDate = new Date();
+      const next = new Date();
+      next.setDate(next.getDate() + 21);
+      donorRecord.donationHistory.nextEligibleDate = next;
+      await donorRecord.save();
     }
 
     await donation.save();

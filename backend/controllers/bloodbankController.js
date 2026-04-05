@@ -2,6 +2,7 @@ import BloodBank  from '../models/BloodBank.js';
 import BloodInventory  from '../models/BloodInventory.js';
 import Donor  from '../models/Donor.js';
 import BloodRequest  from '../models/BloodRequest.js';
+import User  from '../models/User.js';
 
 // @desc    Get blood bank info
 // @route   GET /api/bloodbank/info
@@ -39,14 +40,13 @@ export const updateBloodBankInfo = async (req, res) => {
 
     if (!bloodBank) {
       bloodBank = new BloodBank(req.body);
+      await bloodBank.save();
     } else {
       bloodBank = await BloodBank.findOneAndUpdate({}, req.body, {
         new: true,
         runValidators: true,
       });
     }
-
-    await bloodBank.save();
 
     res.status(200).json({
       success: true,

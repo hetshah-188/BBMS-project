@@ -1,6 +1,17 @@
 import dotenv from 'dotenv';
 dotenv.config();
 
+// Guard must be FIRST
+if (!process.env.JWT_SECRET) {
+  console.error('FATAL: JWT_SECRET env var is not set. Exiting.');
+  process.exit(1);
+}
+if (!process.env.MONGODB_URI) {
+  console.error('FATAL: MONGODB_URI env var is not set. Exiting.');
+  process.exit(1);
+}
+
+
 import express from 'express';
 import mongoose from 'mongoose';
 import cors from 'cors';
@@ -14,12 +25,19 @@ import inventoryRoutes from './routes/inventory.js';
 import requestRoutes from './routes/requests.js';
 import bloodbankRoutes from './routes/bloodbank.js';
 import reportRoutes from './routes/reports.js';
+import { getAdminStats } from './controllers/bloodbankController.js';
+import { protect, authorize } from './middleware/auth.js';
 
 const app = express();
 
 // ==================== MIDDLEWARE ====================
 app.use(helmet()); // Security headers
-app.use(cors()); // Enable CORS
+app.use(cors({
+  origin: process.env.ALLOWED_ORIGINS?.split(',') || ['http://localhost:5173', 'http://localhost:3000'],
+  credentials: true,
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization', 'x-auth-token'],
+}));
 app.use(morgan('dev')); // Request logging
 app.use(express.json()); // Parse JSON
 app.use(express.urlencoded({ extended: true }));
@@ -49,8 +67,8 @@ app.use('/api/requests', requestRoutes);
 app.use('/api/bloodbank', bloodbankRoutes);
 app.use('/api/reports', reportRoutes);
 
-// Alias for admin stats to match frontend
-app.use('/api/admin/stats', bloodbankRoutes);
+// Direct route for admin stats instead of wildcard alias
+app.get('/api/admin/stats', protect, authorize('admin', 'staff'), getAdminStats);
 
 // ==================== ROOT ROUTE ====================
 app.get('/', (req, res) => {
@@ -70,6 +88,7 @@ app.get('/', (req, res) => {
     },
   });
 });
+
 
 // ==================== ERROR HANDLING ====================
 app.use((err, req, res, next) => {

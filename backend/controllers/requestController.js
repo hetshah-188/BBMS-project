@@ -85,20 +85,29 @@ export const createRequest = async (req, res) => {
   try {
     const {
       bloodType,
-      quantity,
+      units,
       reason,
+      purpose,
       description,
       urgency,
       requiredByDate,
       recipientDetails,
       location,
+      hospital,
+      contactNumber,
+      doctorName,
     } = req.body;
 
-    if (!bloodType || !quantity || !reason || !requiredByDate) {
+    // Accept both field name conventions (frontend sends 'units', model uses 'quantity')
+    const quantity = req.body.quantity || units;
+    // Accept both 'reason' and 'purpose' (frontend form uses 'purpose')
+    const requestReason = reason || purpose || 'general';
+
+    if (!bloodType || !quantity || !requiredByDate) {
       return res.status(400).json({
         success: false,
         message:
-          'Blood type, quantity, reason, and required date are required',
+          'Blood type, quantity/units, and required date are required',
       });
     }
 
@@ -111,12 +120,13 @@ export const createRequest = async (req, res) => {
       requesterEmail: user.email,
       bloodType,
       quantity,
-      reason,
+      reason: requestReason,
       description,
       urgency: urgency || 'routine',
       requiredByDate: new Date(requiredByDate),
       recipientDetails,
-      location,
+      location: location || { hospital, address: '', city: '', state: '', pincode: '' },
+      notes: doctorName ? `Doctor: ${doctorName}` : undefined,
       status: 'pending',
       requestDate: Date.now(),
     });
