@@ -1,11 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import { useAuth } from '../context/AuthContext';
-import { donationService } from '../services/api';
+import { useToast } from '../context/ToastContext';
+import { donationService, donorService } from '../services/api';
 import Layout from '../components/Layout';
 
 const DonorDashboard = () => {
-  const { user, logout } = useAuth();
+  const { user } = useAuth();
   const [donations, setDonations] = useState([]);
+  const [donorProfile, setDonorProfile] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [formData, setFormData] = useState({
@@ -16,10 +18,24 @@ const DonorDashboard = () => {
     weight: '',
     notes: ''
   });
+  const toast = useToast();
 
   useEffect(() => {
     fetchDonations();
+    fetchDonorProfile();
   }, []);
+
+  const fetchDonorProfile = async () => {
+    try {
+      // Better: Wait for backend route GET /api/donors/me, but we can filter from all if needed.
+      // Assuming we will add GET /api/donors/me to backend:
+      const data = await donorService.getAll();
+      const myProfile = data.data?.find(d => d.userId?._id === user?.id || d.userId === user?.id);
+      setDonorProfile(myProfile || null);
+    } catch (err) {
+      console.error('Could not load donor profile:', err.message);
+    }
+  };
 
   const fetchDonations = async () => {
     try {
@@ -45,11 +61,11 @@ const DonorDashboard = () => {
         bloodType: formData.bloodType || user?.bloodType,
         donationDate: formData.donationDate || new Date().toISOString()
       });
-      alert('Donation scheduled successfully! 🩸');
+      toast('Donation scheduled successfully! 🩸', 'success');
       setFormData({ hospital: '', units: 1, donationDate: '', bloodType: '', weight: '', notes: '' });
       fetchDonations();
     } catch (err) {
-      alert(err.message);
+      toast(err.message, 'error');
     }
   };
 
@@ -62,7 +78,6 @@ const DonorDashboard = () => {
               <h1 className="text-3xl font-extrabold font-clash mb-2">Welcome back, {user?.name}! 👋</h1>
               <p className="text-gray">Manage your donations and see your impact.</p>
             </div>
-            <button onClick={logout} className="px-6 py-2.5 bg-white border-2 border-primary text-primary font-semibold rounded-[50px] transition-all hover:bg-linear-to-br hover:from-primary hover:to-primary-light hover:text-white hover:border-transparent">Logout</button>
           </div>
 
           {error && (
@@ -79,7 +94,9 @@ const DonorDashboard = () => {
                 <div className="space-y-4">
                   <div className="flex justify-between p-4 bg-[#f8fafc] rounded-xl">
                     <span className="text-gray">Blood Type</span>
-                    <span className="font-bold text-primary text-xl">{user?.bloodType}</span>
+                    <span className="font-bold text-primary text-xl">
+                      {donorProfile?.bloodType || user?.bloodType || '—'}
+                    </span>
                   </div>
                   <div className="flex justify-between p-4 bg-[#f8fafc] rounded-xl">
                     <span className="text-gray">Total Points</span>

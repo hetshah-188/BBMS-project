@@ -1,20 +1,29 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import { Link } from 'react-router-dom';
 
 const Hero = () => {
+  const particles = useMemo(() =>
+    Array.from({ length: 20 }, (_, i) => ({
+      id: i,
+      left: `${Math.random() * 100}%`,
+      top: `${Math.random() * 100}%`,
+      duration: `${10 + Math.random() * 10}s`,
+      delay: `${Math.random() * 5}s`,
+    })), []);
+
   return (
     <section className="min-h-[90vh] flex items-center relative overflow-hidden bg-linear-to-br from-[#FFF5F5] to-[#F0F7FF] py-10 px-[30px]" id="home">
       <div className="absolute top-0 left-0 w-full h-full z-0 opacity-20 pointer-events-none">
         {/* Simple particle placeholders */}
-        {[...Array(20)].map((_, i) => (
+        {particles.map((p) => (
           <div
-            key={i}
+            key={p.id}
             className="absolute w-2.5 h-2.5 bg-primary rounded-full animate-float-particle"
             style={{
-              left: `${Math.random() * 100}%`,
-              top: `${Math.random() * 100}%`,
-              animationDuration: `${10 + Math.random() * 10}s`,
-              animationDelay: `${Math.random() * 5}s`
+              left: p.left,
+              top: p.top,
+              animationDuration: p.duration,
+              animationDelay: p.delay
             }}
           ></div>
         ))}

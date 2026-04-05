@@ -1,10 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import { useAuth } from '../context/AuthContext';
+import { useToast } from '../context/ToastContext';
 import { requestService, inventoryService } from '../services/api';
 import Layout from '../components/Layout';
 
 const PatientDashboard = () => {
-  const { user, logout } = useAuth();
+  const { user } = useAuth();
   const [requests, setRequests] = useState([]);
   const [inventory, setInventory] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -57,7 +58,7 @@ const PatientDashboard = () => {
         doctorName: formData.reqDoctor,
         contactNumber: formData.reqContact
       });
-      alert(`Request submitted! 📋`);
+      toast(`Request submitted! 📋`, 'success');
       setFormData({
         reqBloodType: '',
         reqUnits: 1,
@@ -70,7 +71,7 @@ const PatientDashboard = () => {
       });
       fetchData();
     } catch (err) {
-      alert(err.message);
+      toast(err.message, 'error');
     }
   };
 
@@ -78,10 +79,10 @@ const PatientDashboard = () => {
     if (!window.confirm('Are you sure you want to cancel this request?')) return;
     try {
       await requestService.cancel(id);
-      alert('Request cancelled.');
+      toast('Request cancelled.', 'success');
       fetchData();
     } catch (err) {
-      alert(err.message);
+      toast(err.message, 'error');
     }
   };
 
@@ -91,10 +92,9 @@ const PatientDashboard = () => {
         <div className="max-w-[1400px] mx-auto">
           <div className="flex justify-between items-center mb-10">
             <div>
-              <h1 className="text-3xl font-extrabold font-clash mb-2">Patient Portal | {user?.name}</h1>
-              <p className="text-gray">Request blood and track your status.</p>
+              <h1 className="text-[2.5rem] mb-2 font-clash font-bold">Welcome back, <span className="gradient-text">{user?.name || user?.fullname}</span>!</h1>
+              <p className="text-gray">Manage your blood requests and monitor their status</p>
             </div>
-            <button onClick={logout} className="px-6 py-2.5 bg-white border-2 border-primary text-primary font-semibold rounded-[50px] transition-all hover:bg-linear-to-br hover:from-primary hover:to-primary-light hover:text-white hover:border-transparent">Logout</button>
           </div>
 
           {error && (

@@ -1,6 +1,17 @@
 import dotenv from 'dotenv';
 dotenv.config();
 
+// Guard must be FIRST
+if (!process.env.JWT_SECRET) {
+  console.error('FATAL: JWT_SECRET env var is not set. Exiting.');
+  process.exit(1);
+}
+if (!process.env.MONGODB_URI) {
+  console.error('FATAL: MONGODB_URI env var is not set. Exiting.');
+  process.exit(1);
+}
+
+
 import express from 'express';
 import mongoose from 'mongoose';
 import cors from 'cors';
@@ -14,6 +25,8 @@ import inventoryRoutes from './routes/inventory.js';
 import requestRoutes from './routes/requests.js';
 import bloodbankRoutes from './routes/bloodbank.js';
 import reportRoutes from './routes/reports.js';
+import { getAdminStats } from './controllers/bloodbankController.js';
+import { protect, authorize } from './middleware/auth.js';
 
 const app = express();
 
@@ -54,8 +67,8 @@ app.use('/api/requests', requestRoutes);
 app.use('/api/bloodbank', bloodbankRoutes);
 app.use('/api/reports', reportRoutes);
 
-// Alias for admin stats to match frontend
-app.use('/api/admin/stats', bloodbankRoutes);
+// Direct route for admin stats instead of wildcard alias
+app.get('/api/admin/stats', protect, authorize('admin', 'staff'), getAdminStats);
 
 // ==================== ROOT ROUTE ====================
 app.get('/', (req, res) => {
@@ -76,10 +89,6 @@ app.get('/', (req, res) => {
   });
 });
 
-if (!process.env.JWT_SECRET) {
-  console.error('FATAL: JWT_SECRET env var is not set');
-  process.exit(1);
-}
 
 // ==================== ERROR HANDLING ====================
 app.use((err, req, res, next) => {

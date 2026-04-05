@@ -1,5 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
 import Layout from '../components/Layout';
+import { useToast } from '../context/ToastContext';
 import { bloodbankService } from '../services/api';
 
 const Contact = () => {
@@ -11,6 +12,7 @@ const Contact = () => {
     subject: '',
     message: ''
   });
+  const toast = useToast();
 
   const [bankInfo, setBankInfo] = useState(null);
   const [activeFaq, setActiveFaq] = useState(null);
@@ -50,7 +52,7 @@ const Contact = () => {
 
   const handleFormSubmit = (e) => {
     e.preventDefault();
-    alert('✅ Thank you for reaching out! Our team will contact you within 2 hours. For emergencies, please call our 24/7 helpline.');
+    toast('✅ Thank you for reaching out! Our team will contact you within 2 hours. For emergencies, please call our 24/7 helpline.', 'success');
     setFormData({ name: '', email: '', phone: '', bloodGroup: '', subject: '', message: '' });
   };
 

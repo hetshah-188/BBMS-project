@@ -40,14 +40,13 @@ export const updateBloodBankInfo = async (req, res) => {
 
     if (!bloodBank) {
       bloodBank = new BloodBank(req.body);
+      await bloodBank.save();
     } else {
       bloodBank = await BloodBank.findOneAndUpdate({}, req.body, {
         new: true,
         runValidators: true,
       });
     }
-
-    await bloodBank.save();
 
     res.status(200).json({
       success: true,

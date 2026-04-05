@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
+import { useToast } from '../context/ToastContext';
 import { authService } from '../services/api';
 
 const Login = () => {
@@ -9,6 +10,7 @@ const Login = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
   const { login } = useAuth();
+  const toast = useToast();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -17,7 +19,7 @@ const Login = () => {
       const data = await authService.login(email, password);
       login(data.user, data.token);
     } catch (err) {
-      alert(err.message);
+      toast(err.message, 'error');
     } finally {
       setLoading(false);
     }

@@ -1,11 +1,13 @@
 import React from 'react';
+import { useToast } from '../context/ToastContext';
 
 const EmergencyModal = ({ isOpen, onClose }) => {
+  const toast = useToast();
   if (!isOpen) return null;
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    alert('🚨 Emergency request submitted! Our team will contact you within 5 minutes.');
+    toast('🚨 Emergency request submitted! Our team will contact you within 5 minutes.', 'success');
     onClose();
   };
 

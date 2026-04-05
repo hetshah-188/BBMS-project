@@ -74,10 +74,10 @@ export const getDonorReport = async (req, res) => {
           total: totalDonors,
           eligible: eligibleDonors,
           ineligible: ineligibleDonors,
-          conversionRate: (
+          conversionRate: totalDonors > 0 ? (
             (eligibleDonors / totalDonors) *
             100
-          ).toFixed(2),
+          ).toFixed(2) : '0.00',
         },
         byBloodType: donorsByBloodType,
         byGender: donorsByGender,
@@ -185,8 +185,8 @@ export const getInventoryReport = async (req, res) => {
           available: availableUnits,
           used: usedUnits,
           expired: expiredUnits,
-          utilizationRate: (((usedUnits + expiredUnits) / totalUnits) * 100)
-            .toFixed(2),
+          utilizationRate: totalUnits > 0 ? (((usedUnits + expiredUnits) / totalUnits) * 100)
+            .toFixed(2) : '0.00',
         },
         byBloodType: inventoryByBloodType,
         expiringUnits: {

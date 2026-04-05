@@ -1,16 +1,18 @@
 import React, { useState, useEffect } from 'react';
 import { useAuth } from '../context/AuthContext';
+import { useToast } from '../context/ToastContext';
 import { adminService, requestService, inventoryService } from '../services/api';
 import Layout from '../components/Layout';
 
 const AdminDashboard = () => {
-  const { user, logout } = useAuth();
+  const { user } = useAuth();
   const [stats, setStats] = useState({});
   const [requests, setRequests] = useState([]);
   const [inventory, setInventory] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [activeTab, setActiveTab] = useState('requests');
+  const toast = useToast();
 
   useEffect(() => {
     fetchData();
@@ -37,10 +39,10 @@ const AdminDashboard = () => {
   const updateRequestStatus = async (id, status) => {
     try {
       await requestService.updateStatus(id, status);
-      alert(`Status updated to "${status}"`);
+      toast(`Status updated to "${status}"`, 'success');
       fetchData();
     } catch (err) {
-      alert(err.message);
+      toast(err.message, 'error');
     }
   };
 
@@ -53,7 +55,6 @@ const AdminDashboard = () => {
               <h1 className="text-3xl font-extrabold font-clash mb-2">Admin Control Center | {user?.name}</h1>
               <p className="text-gray">Manage requests and monitor life-saving resources.</p>
             </div>
-            <button onClick={logout} className="px-6 py-2.5 bg-white border-2 border-primary text-primary font-semibold rounded-[50px] transition-all hover:bg-linear-to-br hover:from-primary hover:to-primary-light hover:text-white hover:border-transparent">Logout</button>
           </div>
 
           {error && (
@@ -106,13 +107,13 @@ const AdminDashboard = () => {
                     ) : requests.length > 0 ? (
                       requests.map((r, i) => (
                         <tr key={i} className="hover:bg-[#f8fafc] transition-colors">
-                          <td className="p-4 font-medium">{r.requestId}</td>
-                          <td className="p-4">{r.patientName}</td>
+                          <td className="p-4 font-medium font-mono text-xs">{r._id.toString().slice(-8)}</td>
+                          <td className="p-4">{r.requesterName}</td>
                           <td className="p-4 font-bold text-primary">{r.bloodType}</td>
-                          <td className="p-4 font-bold">{r.units}</td>
+                          <td className="p-4 font-bold">{r.quantity}</td>
                           <td className="p-4">
                             <span className={`px-3 py-1 rounded-full text-xs font-semibold ${
-                              r.urgency === 'critical' ? 'bg-[#ffebee] text-danger' :
+                              r.urgency === 'emergency' ? 'bg-[#ffebee] text-danger' :
                               r.urgency === 'urgent' ? 'bg-[#fff3e0] text-warning' :
                               'bg-[#e0f2fe] text-[#0ea5e9]'
                             }`}>{r.urgency}</span>
@@ -123,7 +124,7 @@ const AdminDashboard = () => {
                               onChange={(e) => updateRequestStatus(r._id, e.target.value)}
                               className="px-3 py-1 bg-white border border-gray/20 rounded-md focus:outline-none focus:border-primary"
                             >
-                              {['submitted', 'processing', 'approved', 'in-transit', 'completed', 'cancelled'].map(s => <option key={s} value={s}>{s}</option>)}
+                              {['pending', 'approved', 'rejected', 'fulfilled', 'cancelled'].map(s => <option key={s} value={s}>{s}</option>)}
                             </select>
                           </td>
                         </tr>

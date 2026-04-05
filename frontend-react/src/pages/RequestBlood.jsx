@@ -1,22 +1,26 @@
 import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
+import { useToast } from '../context/ToastContext';
 import { requestService, inventoryService } from '../services/api';
 import Layout from '../components/Layout';
 
 const RequestBlood = () => {
-  const { user, logout } = useAuth();
+  const { user } = useAuth();
+  const navigate = useNavigate();
+  const toast = useToast();
   const [requests, setRequests] = useState([]);
   const [inventory, setInventory] = useState([]);
   const [loading, setLoading] = useState(true);
   const [formData, setFormData] = useState({
     reqBloodType: '',
     reqUnits: 1,
-    reqUrgency: 'normal',
+    reqUrgency: 'routine',
     reqHospital: '',
-    reqDate: '',
-    reqPurpose: '',
     reqDoctor: '',
-    reqContact: ''
+    reqContact: '',
+    reqDate: '',
+    reqPurpose: ''
   });
 
   useEffect(() => {
@@ -55,20 +59,19 @@ const RequestBlood = () => {
         doctorName: formData.reqDoctor,
         contactNumber: formData.reqContact
       });
-      alert(`Request submitted! ID: ${data.request.requestId} 📋`);
+      toast(`Request submitted! 📋`);
       setFormData({
         reqBloodType: '',
         reqUnits: 1,
-        reqUrgency: 'normal',
+        reqUrgency: 'routine',
         reqHospital: '',
-        reqDate: '',
-        reqPurpose: '',
         reqDoctor: '',
-        reqContact: ''
+        reqContact: '',
+        reqDate: ''
       });
       fetchData();
     } catch (err) {
-      alert(err.message);
+      toast(err.message, 'error');
     }
   };
 

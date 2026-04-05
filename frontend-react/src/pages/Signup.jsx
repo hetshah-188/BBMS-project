@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
+import { useToast } from '../context/ToastContext';
 import { authService } from '../services/api';
 
 const Signup = () => {
@@ -19,6 +20,7 @@ const Signup = () => {
   });
   const [loading, setLoading] = useState(false);
   const { login } = useAuth();
+  const toast = useToast();
   const navigate = useNavigate();
 
   const handleChange = (e) => {
@@ -28,7 +30,7 @@ const Signup = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (formData.password !== formData.confirmPassword) {
-      alert('Passwords do not match!');
+      toast('Passwords do not match!', 'error');
       return;
     }
 
@@ -48,7 +50,7 @@ const Signup = () => {
       });
       login(data.user, data.token);
     } catch (err) {
-      alert(err.message);
+      toast(err.message, 'error');
     } finally {
       setLoading(false);
     }

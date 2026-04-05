@@ -39,7 +39,7 @@ export const AuthProvider = ({ children }) => {
     localStorage.removeItem('bbms_user');
     setToken(null);
     setUser(null);
-    navigate('/');
+    window.location.href = '/';
   };
 
   return (

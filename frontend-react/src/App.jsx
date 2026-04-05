@@ -1,6 +1,7 @@
 import React from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import { AuthProvider } from './context/AuthContext';
+import { ToastProvider } from './context/ToastContext';
 import ProtectedRoute from './components/ProtectedRoute';
 
 import Home from './pages/Home';
@@ -18,7 +19,8 @@ import RequestBlood from './pages/RequestBlood';
 function App() {
   return (
     <Router>
-      <AuthProvider>
+      <ToastProvider>
+        <AuthProvider>
         <Routes>
           <Route path="/" element={<Home />} />
           <Route path="/login" element={<Login />} />
@@ -43,7 +45,8 @@ function App() {
           </Route>
 
         </Routes>
-      </AuthProvider>
+        </AuthProvider>
+      </ToastProvider>
     </Router>
   );
 }

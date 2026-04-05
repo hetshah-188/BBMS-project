@@ -1,7 +1,9 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
+import { useToast } from '../context/ToastContext';
 
 const Footer = () => {
+  const toast = useToast();
   return (
     <footer className="bg-dark text-white pt-[60px] px-[30px] pb-[30px]">
       <div className="max-w-[1400px] mx-auto">
@@ -56,7 +58,7 @@ const Footer = () => {
           <div className="md:col-span-5 lg:col-span-1">
             <h4 className="text-[1.1rem] mb-5 text-white">Stay Updated</h4>
             <p className="text-[#9CA3AF] mb-[15px]">Subscribe for emergency alerts and updates</p>
-            <form className="flex gap-[10px]" onSubmit={(e) => { e.preventDefault(); alert('Subscribed!'); }}>
+            <form className="flex gap-[10px]" onSubmit={(e) => { e.preventDefault(); toast('Subscribed!', 'success'); }}>
               <input
                 type="email"
                 placeholder="Your email"
