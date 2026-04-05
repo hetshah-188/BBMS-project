@@ -8,6 +8,7 @@ const PatientDashboard = () => {
   const [requests, setRequests] = useState([]);
   const [inventory, setInventory] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
   const [formData, setFormData] = useState({
     reqBloodType: '',
     reqUnits: 1,
@@ -33,6 +34,7 @@ const PatientDashboard = () => {
       setInventory(invData.inventory || []);
     } catch (err) {
       console.error(err.message);
+      setError('Failed to load data. Please refresh.');
     } finally {
       setLoading(false);
     }
@@ -95,6 +97,13 @@ const PatientDashboard = () => {
             <button onClick={logout} className="px-6 py-2.5 bg-white border-2 border-primary text-primary font-semibold rounded-[50px] transition-all hover:bg-linear-to-br hover:from-primary hover:to-primary-light hover:text-white hover:border-transparent">Logout</button>
           </div>
 
+          {error && (
+            <div className="p-4 mb-6 text-danger bg-red-50 rounded-xl border border-red-200 flex items-center gap-3">
+              <i className="fas fa-exclamation-circle"></i>
+              <span>{error}</span>
+            </div>
+          )}
+
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 mb-10">
             {['A+', 'A-', 'B+', 'B-', 'O+', 'O-', 'AB+', 'AB-'].map(type => {
               const item = inventory.find(i => i.bloodType === type);
@@ -133,9 +142,9 @@ const PatientDashboard = () => {
                     <div>
                       <label className="block mb-1 text-sm font-medium">Urgency</label>
                       <select name="reqUrgency" required value={formData.reqUrgency} onChange={handleChange} className="w-full p-3 border border-[#f0f0f0] rounded-xl focus:outline-none focus:border-primary appearance-none">
-                        <option value="normal">Normal</option>
+                        <option value="routine">Normal</option>
                         <option value="urgent">Urgent</option>
-                        <option value="critical">Critical</option>
+                        <option value="emergency">Critical</option>
                       </select>
                     </div>
                   </div>

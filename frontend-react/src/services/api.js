@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-const API_BASE = 'http://localhost:5000/api';
+const API_BASE = import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000/api';
 
 const api = axios.create({
   baseURL: API_BASE,
@@ -53,6 +53,25 @@ export const donationService = {
   },
   getMyDonations: async () => {
     const { data } = await api.get('/donations/my');
+    return data;
+  },
+};
+
+export const donorService = {
+  getAll: async (params = {}) => {
+    const { data } = await api.get('/donors', { params });
+    return data;
+  },
+  getById: async (id) => {
+    const { data } = await api.get(`/donors/${id}`);
+    return data;
+  },
+  create: async (payload) => {
+    const { data } = await api.post('/donors', payload);
+    return data;
+  },
+  updateStatus: async (id, status, reason) => {
+    const { data } = await api.put(`/donors/${id}/status`, { status, reason });
     return data;
   },
 };

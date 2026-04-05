@@ -20,7 +20,7 @@ const app = express();
 // ==================== MIDDLEWARE ====================
 app.use(helmet()); // Security headers
 app.use(cors({
-  origin: ['http://localhost:5173', 'http://localhost:3000'], // Vite + CRA dev ports
+  origin: process.env.ALLOWED_ORIGINS?.split(',') || ['http://localhost:5173', 'http://localhost:3000'],
   credentials: true,
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization', 'x-auth-token'],
@@ -75,6 +75,11 @@ app.get('/', (req, res) => {
     },
   });
 });
+
+if (!process.env.JWT_SECRET) {
+  console.error('FATAL: JWT_SECRET env var is not set');
+  process.exit(1);
+}
 
 // ==================== ERROR HANDLING ====================
 app.use((err, req, res, next) => {

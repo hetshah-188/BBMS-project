@@ -7,6 +7,7 @@ const DonorDashboard = () => {
   const { user, logout } = useAuth();
   const [donations, setDonations] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
   const [formData, setFormData] = useState({
     hospital: '',
     units: 1,
@@ -23,9 +24,10 @@ const DonorDashboard = () => {
   const fetchDonations = async () => {
     try {
       const data = await donationService.getMyDonations();
-      setDonations(data.donations);
+      setDonations(data.donations || []);
     } catch (err) {
       console.error(err.message);
+      setError('Failed to load donation history. Please refresh.');
     } finally {
       setLoading(false);
     }
@@ -62,6 +64,13 @@ const DonorDashboard = () => {
             </div>
             <button onClick={logout} className="px-6 py-2.5 bg-white border-2 border-primary text-primary font-semibold rounded-[50px] transition-all hover:bg-linear-to-br hover:from-primary hover:to-primary-light hover:text-white hover:border-transparent">Logout</button>
           </div>
+
+          {error && (
+            <div className="p-4 mb-6 text-danger bg-red-50 rounded-xl border border-red-200 flex items-center gap-3">
+              <i className="fas fa-exclamation-circle"></i>
+              <span>{error}</span>
+            </div>
+          )}
 
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
             <div className="lg:col-span-1 space-y-8">

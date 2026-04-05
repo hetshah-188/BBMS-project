@@ -99,9 +99,9 @@ const RequestBlood = () => {
                   <div>
                     <label className="block mb-2 font-medium">Urgency</label>
                     <select name="reqUrgency" required value={formData.reqUrgency} onChange={handleChange} className="w-full p-3 border border-[#f0f0f0] rounded-xl focus:outline-none focus:border-primary appearance-none">
-                      <option value="normal">Normal</option>
+                      <option value="routine">Normal</option>
                       <option value="urgent">Urgent</option>
-                      <option value="critical">Critical</option>
+                      <option value="emergency">Critical</option>
                     </select>
                   </div>
                 </div>

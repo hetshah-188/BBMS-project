@@ -9,6 +9,7 @@ const AdminDashboard = () => {
   const [requests, setRequests] = useState([]);
   const [inventory, setInventory] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
   const [activeTab, setActiveTab] = useState('requests');
 
   useEffect(() => {
@@ -27,6 +28,7 @@ const AdminDashboard = () => {
       setInventory(invData.inventory || []);
     } catch (err) {
       console.error(err.message);
+      setError('Failed to load dashboard data. Please refresh the page.');
     } finally {
       setLoading(false);
     }
@@ -54,6 +56,12 @@ const AdminDashboard = () => {
             <button onClick={logout} className="px-6 py-2.5 bg-white border-2 border-primary text-primary font-semibold rounded-[50px] transition-all hover:bg-linear-to-br hover:from-primary hover:to-primary-light hover:text-white hover:border-transparent">Logout</button>
           </div>
 
+          {error && (
+            <div className="p-4 mb-6 text-danger bg-red-50 rounded-xl border border-red-200 flex items-center gap-3">
+              <i className="fas fa-exclamation-circle"></i>
+              <span>{error}</span>
+            </div>
+          )}
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8 mb-10">
             <div className="bg-white p-8 rounded-[30px] shadow-md text-center border-b-4 border-primary transition-transform hover:-translate-y-2">
               <div className="text-[2.5rem] font-extrabold text-primary mb-1">{stats.totalBloodUnits || 0}</div>

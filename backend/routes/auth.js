@@ -111,7 +111,7 @@ router.post(
         token,
         user: {
           id: user._id,
-          fullname: user.name,
+          name: user.name,
           email: user.email,
           role: user.role,
         },
