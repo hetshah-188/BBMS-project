@@ -7,6 +7,9 @@ import Home from './pages/Home';
 import Login from './pages/Login';
 import Signup from './pages/Signup';
 import About from './pages/About';
+import WhyDonate from './pages/WhyDonate';
+import BecomeDonor from './pages/BecomeDonor';
+import Contact from './pages/Contact';
 import DonorDashboard from './pages/DonorDashboard';
 import PatientDashboard from './pages/PatientDashboard';
 import AdminDashboard from './pages/AdminDashboard';
@@ -21,6 +24,9 @@ function App() {
           <Route path="/login" element={<Login />} />
           <Route path="/signup" element={<Signup />} />
           <Route path="/about" element={<About />} />
+          <Route path="/why-donate" element={<WhyDonate />} />
+          <Route path="/become-donor" element={<BecomeDonor />} />
+          <Route path="/contact" element={<Contact />} />
 
           <Route element={<ProtectedRoute allowedRoles={['donor']} />}>
             <Route path="/donor-dashboard" element={<DonorDashboard />} />
@@ -36,10 +42,6 @@ function App() {
             <Route path="/hospital-dashboard" element={<AdminDashboard />} />
           </Route>
 
-          {/* Fallback routes */}
-          <Route path="/why-donate" element={<About />} />
-          <Route path="/become-donor" element={<Signup />} />
-          <Route path="/contact" element={<About />} />
         </Routes>
       </AuthProvider>
     </Router>
